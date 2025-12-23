@@ -35,10 +35,13 @@ tsp_aco_hw4 dataset/dt1/point.txt ans_dt1.txt --iter 200 --pop 50 --alpha 1 --be
 tsp_elastic_net dataset/dt1/point.txt ans_dt1.txt --runs 30 --Mmul 8 --record 100
 ```
 
-Execute `plot`
+Execute `plot_xx.py`
 ```bash
 python plot_dp.py dataset output_hw3 fig_hw3
 ```
 ```bash
 python plot_aco.py dataset output_hw4 fig_hw4
+```
+```bash
+python plot_gif.py dataset/dt4/point.txt output_bonus/dt4_frames
 ```
