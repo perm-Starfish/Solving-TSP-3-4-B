@@ -1,6 +1,6 @@
 # Solving-TSP-3-4-B
 > **Algorithms - Assignment 3 &amp; 4**
-> ( + Bonus Assignment)
+> (Bonus Assignment)
 > 
 Compile files
 ```bash
