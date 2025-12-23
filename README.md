@@ -10,7 +10,7 @@ g++ -O2 -std=c++17 tsp_dp_hw3.cpp -o tsp_dp_hw3
 g++ -O2 -std=c++17 tsp_aco_hw4.cpp -o tsp_aco_hw4
 ```
 
-Execute `tsp_dp_hw3.exe` (dt1~dt3), `tsp_aco_hw4.exe` (dt1~dt4)
+Execute `tsp_dp_hw3.exe` (dt1-dt3), `tsp_aco_hw4.exe` (dt1-dt4)
 ```bash
 tsp_dp_hw3 --batch dataset output_hw3
 ```
