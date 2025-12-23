@@ -13,7 +13,7 @@ g++ -O2 -std=c++17 tsp_aco_hw4.cpp -o tsp_aco_hw4
 g++ -O2 -std=c++17 tsp_elastic_net.cpp -o tsp_elastic_net
 ```
 
-Execute `tsp_dp_hw3.exe` (dt1-dt3), `tsp_aco_hw4.exe` (dt1-dt4), `tsp_elastic_net.exe` (dt1-dt4)
+Execute `tsp_dp_hw3.exe` (dt1-dt3), `tsp_aco_hw4.exe` (dt1-dt4), `tsp_elastic_net.exe` (dt1-dt3)
 ```bash
 tsp_dp_hw3 --batch dataset output_hw3
 ```
