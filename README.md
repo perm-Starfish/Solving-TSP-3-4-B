@@ -24,7 +24,7 @@ tsp_aco_hw4 --batch dataset output_hw4 --iter 200 --pop 50 --alpha 1 --beta 5 --
 tsp_elastic_net --batch dataset output_bonus --runs 30 --iter 0 --eval 0 --Mmul 8 --lr0 0.2 --lr1 0.02 --sig0 3 --sig1 0.5 --lam0 0.02 --lam1 0.2 --record 100
 ```
 
-Execute `tsp_dp_hw3.exe` (dt1), `tsp_aco_hw4` (dt1), `tsp_elastic_net.exe`
+Execute `tsp_dp_hw3.exe` (dt1), `tsp_aco_hw4` (dt1), `tsp_elastic_net.exe` (dt1)
 ```bash
 tsp_dp_hw3 dataset/dt1/point.txt ans_dt1.txt
 ```
