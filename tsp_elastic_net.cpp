@@ -152,44 +152,73 @@ static vector<pair<double,double>> init_ring(const vector<City>& cities, int M, 
     return W;
 }
 
-// one evaluation step: pick one city, find best matching unit (BMU), pull neighborhood + elastic smoothing
+// one evaluation step (paper-aligned):
+// soft assignment eta_ij = exp(-||X - Wj||^2 / (2K^2)) / sum_k exp(...)
+// then gradient step:
+//   Wj += lr * [ alpha * eta_j * (X - Wj) + lambda * (W_{j-1}+W_{j+1}-2Wj) ]
 static void en_step(
     vector<pair<double,double>>& W,
     const City& c,
     double lr,
-    double sigma,
+    double sigma,   // NOTE: reinterpret as K (paper's scale parameter)
     double lambda
 ) {
+    const double alpha = 1.0; // paper's attraction weight (keep fixed; lr scales overall step)
+
     int M = (int)W.size();
-    // find BMU
-    int bmu = 0;
-    double best = 1e100;
-    for (int i = 0; i < M; i++) {
-        double d = dist2d(c.x, c.y, W[i].first, W[i].second);
-        if (d < best) { best = d; bmu = i; }
-    }
+    if (M == 0) return;
 
-    // neighborhood pull
-    double sigma2 = max(sigma*sigma, 1e-12);
-    for (int i = 0; i < M; i++) {
-        int rd = ring_dist(i, bmu, M);
-        double h = exp(-(double)(rd*rd) / (2.0*sigma2)); // Gaussian in index space
-        W[i].first  += lr * h * (c.x - W[i].first);
-        W[i].second += lr * h * (c.y - W[i].second);
-    }
+    // K^2 with floor for numerical safety
+    double K2 = max(sigma * sigma, 1e-12);
 
-    // elastic smoothing (discrete Laplacian on ring): w_i += lr*lambda*(w_{i-1}+w_{i+1}-2w_i)
-    // do it with a copy to avoid bias
+    // Copy for unbiased (simultaneous) update
     vector<pair<double,double>> W0 = W;
-    for (int i = 0; i < M; i++) {
-        int ip = (i + 1) % M;
-        int im = (i - 1 + M) % M;
-        double ex = (W0[im].first + W0[ip].first - 2.0*W0[i].first);
-        double ey = (W0[im].second + W0[ip].second - 2.0*W0[i].second);
-        W[i].first  += lr * lambda * ex;
-        W[i].second += lr * lambda * ey;
+
+    // Compute unnormalized weights w_j = exp(-||X-Wj||^2 / (2K^2))
+    // then normalize to get eta_j.
+    vector<double> w(M);
+
+    // Use max-trick for numerical stability
+    double maxLog = -1e300;
+    for (int j = 0; j < M; j++) {
+        double dx = c.x - W0[j].first;
+        double dy = c.y - W0[j].second;
+        double d2 = dx*dx + dy*dy;                // squared distance
+        double logwj = -d2 / (2.0 * K2);
+        if (logwj > maxLog) maxLog = logwj;
+        w[j] = logwj; // temporarily store log-weight
+    }
+
+    double denom = 0.0;
+    for (int j = 0; j < M; j++) {
+        double ej = exp(w[j] - maxLog);
+        w[j] = ej;          // now store exp(logw - maxLog)
+        denom += ej;
+    }
+    if (denom <= 0.0) return;
+
+    // Update all nodes:
+    // attraction term uses eta_j = w[j]/denom
+    // elastic term uses discrete Laplacian on ring
+    for (int j = 0; j < M; j++) {
+        int jp = (j + 1) % M;
+        int jm = (j - 1 + M) % M;
+
+        double eta = w[j] / denom;
+
+        // attraction (paper): alpha * eta * (X - Wj)
+        double ax = alpha * eta * (c.x - W0[j].first);
+        double ay = alpha * eta * (c.y - W0[j].second);
+
+        // elastic smoothing (paper): lambda * (W_{j+1}+W_{j-1}-2Wj)
+        double ex = (W0[jm].first + W0[jp].first - 2.0*W0[j].first);
+        double ey = (W0[jm].second + W0[jp].second - 2.0*W0[j].second);
+
+        W[j].first  = W0[j].first  + lr * (ax + lambda * ex);
+        W[j].second = W0[j].second + lr * (ay + lambda * ey);
     }
 }
+
 
 static bool write_summary_ans(
     const string& outPath,
