@@ -103,15 +103,15 @@ static vector<int> construct_ant_solution(
             // prob ∝ (tau)^alpha * (eta)^beta
             // eta = 1 / distance
             double p = tau[current][j] * eta[current][j];
-            // tau already stores tau^alpha. We'll store raw tau and apply pow
+            // tau already stores tau^alpha.
             // will compute exactly as formula.
             p = pow(tau[current][j], 1.0) * pow(eta[current][j], 1.0); // placeholder; will overwrite below
         }
         // will re-loop once
-        // NOTE: This function doesn't know alpha/beta; we'll compute in caller by passing pre-powered tables.
+        // NOTE: This function doesn't know alpha/beta; will compute in caller by passing pre-powered tables.
         // So in this helper, tau and eta are already pre-powered.
 
-        // Actually: pass tauPow and etaPow in. So use directly:
+        // HERE: pass tauPow and etaPow in. So use directly:
         sum = 0.0;
         for (int j = 0; j < n; j++) {
             if (visited[j]) continue;
@@ -138,7 +138,7 @@ static vector<int> construct_ant_solution(
                 if (r <= acc) { next = j; break; } // greater than threshold -> select as next
             }
             if (next == -1) {
-                // numerical edge-case
+                // fallback: numerical edge-case
                 for (int j = n - 1; j >= 0; j--) if (!visited[j]) { next = j; break; }
             }
         }
@@ -241,7 +241,7 @@ static bool solve_tsp_aco(
                     best_order_idx = ant_tours.back();
                 }
 
-                // record best every 100 eval (for GIF requirement in Bonus, but harmless here)
+                // record best every 100 eval, no need
                 if (best_record_100 && (eval_count % 100 == 0)) {
                     best_record_100->push_back(best_run);
                 }
@@ -266,11 +266,10 @@ static bool solve_tsp_aco(
                 // closing edge
                 int u = tour.back(), v = tour[0];
                 tau[u][v] += deposit;
-                tau[v][u] += deposit;
+                tau[v][u] += deposit; // ant that walk shorter path deposit more pheromone
             }
 
             // (optional) can cap tau to avoid explosion
-            // for stability in demos:
             const double TAU_MAX = 1e6;
             for (int i = 0; i < n; i++)
                 for (int j = 0; j < n; j++)
