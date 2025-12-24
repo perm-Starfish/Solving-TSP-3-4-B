@@ -54,7 +54,10 @@ python plot_dp.py dataset output_hw3 fig_hw3
 python plot_aco.py dataset output_hw4 fig_hw4
 ```
 
-- Execute `plot_gif.py` (dt3, dt4)
+- Execute `plot_gif.py` (dt2, dt3, dt4)
+```bash
+python plot_gif.py dataset/dt2/point.txt output_bonus/dt2_frames
+```
 ```bash
 python plot_gif.py dataset/dt3/point.txt output_bonus/dt3_frames
 ```
