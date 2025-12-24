@@ -1,6 +1,5 @@
 # Solving-TSP-3-4-B
-> **Algorithms - Assignment 3 &amp; 4**
-> (+ Bonus Assignment)
+> **Algorithms - Assignment 3 &amp; 4 + Bonus**
 
 
 ## Results Description
